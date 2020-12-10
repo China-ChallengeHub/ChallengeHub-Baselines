@@ -1,0 +1,2 @@
+# ChallengeHub-Baselines
+ChallengeHub开源的各大比赛baseline集合
