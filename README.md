@@ -1,7 +1,8 @@
 # ChallengeHub-Baselines
 ChallengeHub开源的各大比赛baseline集合
 
-
+## 机器学习比赛
+- [公积金贷款逾期预测](http://data.sd.gov.cn/cmpt/cmptDetail.html?id=26) ，[baseline]()
 
 ## 微信公众号
 
