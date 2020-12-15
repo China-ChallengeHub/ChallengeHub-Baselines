@@ -3,6 +3,7 @@ ChallengeHub开源的各大比赛baseline集合
 
 ## 机器学习比赛
 - [山东省第二届数据应用创新创业大赛-日照分赛场-公积金贷款逾期预测](http://data.sd.gov.cn/cmpt/cmptDetail.html?id=26) ，[baseline](https://github.com/China-ChallengeHub/ChallengeHub-Baselines/tree/main/shandong_gongjijin)
+- [山东省第二届数据应用创新创业大赛-济南分赛场-健康医疗](http://data.sd.gov.cn/cmpt/cmptDetail.html?id=22),[baseline](https://github.com/China-ChallengeHub/ChallengeHub-Baselines/tree/main/山东健康医疗)
 
 ## 微信公众号
 
