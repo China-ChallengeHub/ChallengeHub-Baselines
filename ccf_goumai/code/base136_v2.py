@@ -27,7 +27,7 @@ class solution:
         self.tem_yixiang_index=0
         self.tem_yixiang=list(self.yixiang2value.keys())[self.tem_yixiang_index]
 
-    def search_for_one_buyer(self,var,yixiangs,buyer_id,buyer_index):
+    def search_for_one_buyer(self, var, yixiangs, buyer_id, buyer_index):
         """
         给每一个buyer分配资源，分配的规则是意向优先，尽可能让该buyer满足更多的意向
         :param var:  SR CF
@@ -36,61 +36,63 @@ class solution:
         :param buyer_index: 该buyer在self.buyer的index
         :return:             不返回值，更新剩余资源和Buyer信息
         """
-        buyer_tem=self.tem_buyer.copy()
-        tem_seller=self.tem_seller.copy()
-        number = buyer_tem.loc[buyer_index,'购买货物数量']#.values[0]
-        satisfy_yixiang = [str(self.tem_yixiang_index+1)]
+        buyer_tem = self.tem_buyer.copy()
+        tem_seller = self.tem_seller.copy()
+        number = buyer_tem.loc[buyer_index, '购买货物数量']  # .values[0]
+        satisfy_yixiang = [str(self.tem_yixiang_index + 1)]
         for i, (yixiang, yixiang_value) in enumerate(yixiangs):
             if pd.isna(yixiang):
                 continue
             if yixiang == '仓库' or yixiang == '年度':
                 yixiang_value = int(yixiang_value)
-            if sum(tem_seller[tem_seller[yixiang] == yixiang_value]['货物数量（张）']) > 0: ##尽可能的取出可以满足多个意向的
+            if sum(tem_seller[tem_seller[yixiang] == yixiang_value]['货物数量（张）']) > 0:  ##尽可能的取出可以满足多个意向的
                 tem_seller = tem_seller[tem_seller[yixiang] == yixiang_value]
-                satisfy_yixiang.append(str(i + self.tem_yixiang_index+2))
+                satisfy_yixiang.append(str(i + self.tem_yixiang_index + 2))
         tem_seller = tem_seller.sort_values(by=['货物数量（张）'], ascending=True)
         for i in tem_seller.index:
             good_num = tem_seller.loc[i]['货物数量（张）']
-            if good_num<=0:
+            if good_num <= 0:
                 continue
-            seller_id=tem_seller.loc[i]['卖方客户']
-            good_id=tem_seller.loc[i]['货物编号']
-            ware_id=tem_seller.loc[i]['仓库']
+            seller_id = tem_seller.loc[i]['卖方客户']
+            good_id = tem_seller.loc[i]['货物编号']
+            ware_id = tem_seller.loc[i]['仓库']
 
             # print(good_num)
             if good_num >= number:
-                tem_seller.loc[i,'货物数量（张）'] = good_num - number
-                self.tem_seller.loc[i,'货物数量（张）'] = good_num - number  ##真实的记录下来
-                self.seller.loc[i,'货物数量（张）']=good_num - number
+                tem_seller.loc[i, '货物数量（张）'] = good_num - number
+                self.tem_seller.loc[i, '货物数量（张）'] = good_num - number  ##真实的记录下来
+                self.seller.loc[i, '货物数量（张）'] = good_num - number
                 self.result.append([buyer_id, seller_id, var, good_id, ware_id, number, '-'.join(satisfy_yixiang)])
                 number = 0
                 break
             else:
                 self.result.append([buyer_id, seller_id, var, good_id, ware_id, good_num, '-'.join(satisfy_yixiang)])
                 number = number - good_num
-                tem_seller.loc[i,'货物数量（张）'] = 0  #tem_seller.loc[i]['货物数量（张）'] -good_num
-                self.tem_seller.loc[i,'货物数量（张）'] =0  # self.tem_seller.loc[i]['货物数量（张）']-good_num
-                self.seller.loc[i, '货物数量（张）']=0
-                if number==0:
+                tem_seller.loc[i, '货物数量（张）'] = 0  # tem_seller.loc[i]['货物数量（张）'] -good_num
+                self.tem_seller.loc[i, '货物数量（张）'] = 0  # self.tem_seller.loc[i]['货物数量（张）']-good_num
+                self.seller.loc[i, '货物数量（张）'] = 0
+                if number == 0:
                     break
-        self.tem_buyer.loc[buyer_index,'购买货物数量']=number
-        self.buyer.loc[buyer_index,'购买货物数量']=number
-        if number > 0 and sum(self.tem_seller['货物数量（张）']) > 0: ##如果满足最基础意向的还有剩下的，那么就继续  这两个哪怕有一个等一0，那么都不需要继续了。
-            self.search_for_one_buyer(var,yixiangs,buyer_id,buyer_index)
+        self.tem_buyer.loc[buyer_index, '购买货物数量'] = number
+        self.buyer.loc[buyer_index, '购买货物数量'] = number
+        if number > 0 and sum(self.tem_seller['货物数量（张）']) > 0:  ##如果满足最基础意向的还有剩下的，那么就继续  这两个哪怕有一个等一0，那么都不需要继续了。
+            self.search_for_one_buyer(var, yixiangs, buyer_id, buyer_index)
 
-    def getorder(self,buyer_tm,var,col1):
+    def getorder(self, buyer_tm, var, col1):
         """根据意向和购买数量对Buyer设定权重"""
         if var == "SR":
             weight = [40, 30, 20, 10]
             for i in range(self.tem_yixiang_index, 4):
-                buyer_tm.loc[buyer_tm.index, '权值系数'] = buyer_tm.loc[buyer_tm.index, '权值系数'] + pd.notna(buyer_tm.loc[buyer_tm.index, col1[i]]).astype(int) * weight[i]
+                buyer_tm.loc[buyer_tm.index, '权值系数'] = buyer_tm.loc[buyer_tm.index, '权值系数'] + pd.notna(
+                    buyer_tm.loc[buyer_tm.index, col1[i]]).astype(int) * weight[i]
         else:
             weight = [33, 27, 20, 13, 7]
             for i in range(self.tem_yixiang_index, 5):
                 buyer_tm.loc[buyer_tm.index, '权值系数'] = buyer_tm.loc[buyer_tm.index, '权值系数'] + pd.notna(
                     buyer_tm.loc[buyer_tm.index, col1[i]]).astype(int) * weight[i]
-        buyer_tm.loc[buyer_tm.index, '权重'] = buyer_tm.loc[buyer_tm.index, '权值系数'] * buyer_tm.loc[buyer_tm.index, '购买货物数量']
-        buyer_tm=buyer_tm.sort_values(by=['权重'],ascending=True)
+        buyer_tm.loc[buyer_tm.index, '权重'] = buyer_tm.loc[buyer_tm.index, '权值系数'] * buyer_tm.loc[
+            buyer_tm.index, '购买货物数量']
+        buyer_tm = buyer_tm.sort_values(by=['权重'], ascending=False)
         return buyer_tm
 
 
@@ -208,24 +210,25 @@ class solution:
         与search_sameyixiang相似，只是不需要在乎意向
         :return:
         """
-        for var in ["SR","CF"]:
-            self.tem_seller=self.seller[self.seller['品种']==var]
-            self.tem_buyer=self.buyer[self.buyer['品种']==var]
-            self.tem_buyer=self.tem_buyer.sort_values(by=['购买货物数量'], ascending=True)
+        for var in ["SR", "CF"]:
+            self.tem_seller = self.seller[self.seller['品种'] == var]
+            self.tem_buyer = self.buyer[self.buyer['品种'] == var]
+            self.tem_buyer = self.tem_buyer.sort_values(by=['购买货物数量'], ascending=False)
             buyer_tem_len = len(self.tem_buyer)
             print("该情况下买方用户的数量", buyer_tem_len)
             for i, buyer_index in enumerate(self.tem_buyer.index):
-                buy_id=self.tem_buyer.loc[buyer_index,'买方客户']
-                if i==buyer_tem_len-1:
-                    print("第几个买家：", i + 1, "多少买家:", buyer_tem_len, "买家id:", buy_id, "时间:", datetime.datetime.now(),sum(self.buyer['购买货物数量'])==sum(self.seller['货物数量（张）']))
-                self.search_by_noyixiang_onebuy(buy_id,var,buyer_index)
+                buy_id = self.tem_buyer.loc[buyer_index, '买方客户']
+                if i == buyer_tem_len - 1:
+                    print("第几个买家：", i + 1, "多少买家:", buyer_tem_len, "买家id:", buy_id, "时间:", datetime.datetime.now(),
+                          sum(self.buyer['购买货物数量']) == sum(self.seller['货物数量（张）']))
+                self.search_by_noyixiang_onebuy(buy_id, var, buyer_index)
                 self.tem_seller = self.tem_seller[self.tem_seller['货物数量（张）'] > 0]
-                if i==buyer_tem_len-1:
+                if i == buyer_tem_len - 1:
                     print("该意向下还剩下多少卖家：", len(self.tem_seller))
-            self.seller=self.seller[self.seller['货物数量（张）']>0]
-            self.buyer=self.buyer[self.buyer['购买货物数量']>0]
-            print("目前剩下多少买家：",len(self.buyer))
-            print("目前剩下多少卖家：",len(self.seller))
+            self.seller = self.seller[self.seller['货物数量（张）'] > 0]
+            self.buyer = self.buyer[self.buyer['购买货物数量'] > 0]
+            print("目前剩下多少买家：", len(self.buyer))
+            print("目前剩下多少卖家：", len(self.seller))
 
     def sort_by_xiyang(self):
         """
@@ -245,7 +248,7 @@ class solution:
                 emotions_and_good.append((i, "CF", tem2, tem2 * self.CF_value[self.tem_yixiang_index]))
 
             emotions_and_good=[i for i in emotions_and_good if i[2]>0]
-            emotions_and_good = sorted(emotions_and_good, key=lambda x: x[3])#[::-1]
+            emotions_and_good = sorted(emotions_and_good, key=lambda x: x[3])[::-1]
             self.search_sameyixiang(emotions_and_good)
 
 
@@ -257,7 +260,7 @@ class solution:
 
 sol=solution(seller,buyer)
 sol.main()
-# res=pd.read_csv('result_format_example.csv',encoding='gbk')
-# col=res.columns.to_list()
-# resu=pd.DataFrame(sol.result,columns=col)
-# resu.to_csv(r"result.txt",sep=",",columns=col,index=False)
+res=pd.read_csv('result_format_example.csv',encoding='gbk')
+col=res.columns.to_list()
+resu=pd.DataFrame(sol.result,columns=col)
+# resu.to_csv(r"result.txt",sep=",",columns=col,index=False,encoding='gbk')
