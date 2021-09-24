@@ -6,7 +6,7 @@ ChallengeHub开源的各大比赛baseline集合
 - [山东省第二届数据应用创新创业大赛-济南分赛场-健康医疗](http://data.sd.gov.cn/cmpt/cmptDetail.html?id=22),[baseline](https://github.com/China-ChallengeHub/ChallengeHub-Baselines/tree/main/山东健康医疗)
 - [CCF-BDCI基于买方意向的货物撮合交易](https://www.datafountain.cn/competitions/487/datasets),[baseline](https://github.com/China-ChallengeHub/ChallengeHub-Baselines/tree/main/ccf_goumai)
 - [山东省第二届数据应用创新创业大赛-临沂分赛场-供水管网压力预测](http://data.sd.gov.cn/cmpt/cmptDetail.html?id=24),[baseline](https://github.com/China-ChallengeHub/ChallengeHub-Baselines/tree/main/shandong_shuiguan)
-
+- [CCF BDCI 剧本角色情感识别](https://www.datafountain.cn/competitions/518),[baseline](https://github.com/China-ChallengeHub/ChallengeHub-Baselines/blob/main/aiqiyi-baseline.ipynb)
 ## 比赛top方案
 - [“2020创青春·交子杯” 新网银行金融科技挑战赛 AI算法赛道](https://github.com/China-ChallengeHub/Cellphone-Behavior)
 ## 微信公众号
